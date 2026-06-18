@@ -1,5 +1,6 @@
 import uuid
 import json
+import shutil
 from pathlib import Path
 from typing import Optional, List, Dict, Any
 
@@ -21,12 +22,12 @@ class StorageService:
         return str(uuid.uuid4())
     
     @staticmethod
-    def save_uploaded_file(file_content: bytes, filename: str, audio_id: str) -> str:
+    def move_tmp_to_storage(tmp_path: str, filename: str, audio_id: str) -> str:
         ext = Path(filename).suffix or ".mp3"
         saved_filename = f"{audio_id}{ext}"
-        file_path = UPLOAD_DIR / saved_filename
-        file_path.write_bytes(file_content)
-        return str(file_path)
+        target_path = UPLOAD_DIR / saved_filename
+        shutil.move(tmp_path, str(target_path))
+        return str(target_path)
     
     @staticmethod
     def save_waveform(audio_id: str, waveform_data: dict) -> None:

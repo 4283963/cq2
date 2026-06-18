@@ -1,23 +1,46 @@
+import os
+import tempfile
+
 from fastapi import APIRouter, UploadFile, File, HTTPException
 from fastapi.responses import FileResponse
 from typing import List
 
 from app.services.audio_service import AudioService
 from app.models import UploadResponse, WaveformData, AudioFeatures, AudioInfo, SliceInfo
+from app.core.config import UPLOAD_DIR
 
 router = APIRouter()
+
+CHUNK_SIZE = 1024 * 1024
 
 
 @router.post("/upload", response_model=UploadResponse)
 async def upload_audio(file: UploadFile = File(...)):
+    tmp_path = None
     try:
-        content = await file.read()
-        result = AudioService.process_upload(content, file.filename)
+        audio_id = AudioService.generate_id()
+        ext = os.path.splitext(file.filename or "audio.mp3")[1] or ".mp3"
+
+        fd, tmp_path = tempfile.mkstemp(suffix=ext, dir=str(UPLOAD_DIR))
+        try:
+            while True:
+                chunk = await file.read(CHUNK_SIZE)
+                if not chunk:
+                    break
+                os.write(fd, chunk)
+        finally:
+            os.close(fd)
+
+        result = AudioService.process_upload_from_path(tmp_path, file.filename, audio_id)
+        tmp_path = None
         return result
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
+    finally:
+        if tmp_path and os.path.exists(tmp_path):
+            os.remove(tmp_path)
 
 
 @router.get("/{audio_id}/info", response_model=AudioInfo)

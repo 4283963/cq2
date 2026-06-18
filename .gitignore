@@ -15,6 +15,7 @@ logs/
 *.tmp
 *.bak
 *.mp4
+*.lib
 # 开发工具缓存 (IDEA / VSCode)
 .idea/
 .vscode/

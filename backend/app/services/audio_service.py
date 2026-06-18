@@ -15,10 +15,12 @@ from app.models import WaveformData, AudioFeatures, AudioInfo, UploadResponse, S
 
 class AudioService:
     @staticmethod
-    def process_upload(file_content: bytes, filename: str) -> UploadResponse:
-        audio_id = StorageService.generate_id()
-        
-        file_path = StorageService.save_uploaded_file(file_content, filename, audio_id)
+    def generate_id() -> str:
+        return StorageService.generate_id()
+
+    @staticmethod
+    def process_upload_from_path(tmp_path: str, filename: str, audio_id: str) -> UploadResponse:
+        file_path = StorageService.move_tmp_to_storage(tmp_path, filename, audio_id)
         
         y, sr = load_audio(file_path, sr=SAMPLE_RATE)
         
