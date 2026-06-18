@@ -1,0 +1,83 @@
+.transport-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  background: #22223a;
+  border-radius: 12px;
+  border: 1px solid #3a3a5a;
+}
+
+.time-display {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: 'SF Mono', Monaco, Consolas, monospace;
+}
+
+.current-time {
+  font-size: 24px;
+  font-weight: 600;
+  color: #6c63ff;
+}
+
+.time-separator {
+  font-size: 16px;
+  color: #666;
+}
+
+.total-time {
+  font-size: 16px;
+  color: #888;
+}
+
+.control-buttons {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.control-btn {
+  width: 48px;
+  height: 48px;
+  border: none;
+  border-radius: 50%;
+  font-size: 18px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  background: #3a3a5a;
+  color: #ccc;
+}
+
+.control-btn:hover:not(:disabled) {
+  background: #4a4a6a;
+  transform: scale(1.05);
+}
+
+.control-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.control-btn.play-btn {
+  width: 56px;
+  height: 56px;
+  font-size: 20px;
+  background: #6c63ff;
+  color: white;
+}
+
+.control-btn.play-btn:hover:not(:disabled) {
+  background: #7c73ff;
+}
+
+.control-btn.play-btn.playing {
+  background: #ff6b6b;
+}
+
+.control-btn.play-btn.playing:hover:not(:disabled) {
+  background: #ff7b7b;
+}

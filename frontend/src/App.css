@@ -1,0 +1,141 @@
+.app-container {
+  min-height: 100vh;
+  padding: 24px;
+  max-width: 1400px;
+  margin: 0 auto;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 32px;
+}
+
+.app-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.app-subtitle {
+  font-size: 14px;
+  color: #888;
+}
+
+.main-content {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  gap: 24px;
+}
+
+.left-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.right-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.tracks-section {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-header h2 {
+  font-size: 18px;
+  font-weight: 600;
+  color: #fff;
+}
+
+.add-track-btn {
+  padding: 8px 16px;
+  background: #6c63ff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.add-track-btn:hover:not(:disabled) {
+  background: #7c73ff;
+}
+
+.add-track-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.tracks-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.timeline-section {
+  background: #22223a;
+  border-radius: 8px;
+  padding: 4px;
+}
+
+.error-message {
+  background: rgba(255, 107, 107, 0.1);
+  border: 1px solid #ff6b6b;
+  color: #ff6b6b;
+  padding: 12px 16px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.instructions-panel {
+  background: #22223a;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #3a3a5a;
+}
+
+.instructions-panel .panel-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.instructions-panel ul {
+  list-style: none;
+  padding: 0;
+}
+
+.instructions-panel li {
+  padding: 8px 0;
+  font-size: 13px;
+  color: #aaa;
+  position: relative;
+  padding-left: 20px;
+}
+
+.instructions-panel li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: #6c63ff;
+}
+
+@media (max-width: 1024px) {
+  .main-content {
+    grid-template-columns: 1fr;
+  }
+}

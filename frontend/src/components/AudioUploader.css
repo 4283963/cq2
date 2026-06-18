@@ -1,0 +1,31 @@
+.audio-uploader {
+  border: 2px dashed #4a4a6a;
+  border-radius: 12px;
+  padding: 40px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: #22223a;
+}
+
+.audio-uploader:hover,
+.audio-uploader.dragging {
+  border-color: #6c63ff;
+  background: #2a2a4a;
+}
+
+.upload-icon {
+  font-size: 48px;
+  margin-bottom: 16px;
+}
+
+.upload-text {
+  font-size: 16px;
+  color: #ccc;
+  margin-bottom: 8px;
+}
+
+.upload-hint {
+  font-size: 13px;
+  color: #888;
+}

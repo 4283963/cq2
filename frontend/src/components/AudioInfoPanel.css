@@ -1,0 +1,54 @@
+.audio-info-panel {
+  background: #22223a;
+  border-radius: 12px;
+  padding: 20px;
+  border: 1px solid #3a3a5a;
+}
+
+.panel-title {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  margin-bottom: 16px;
+}
+
+.info-section {
+  margin-bottom: 20px;
+}
+
+.info-section:last-child {
+  margin-bottom: 0;
+}
+
+.section-title {
+  font-size: 13px;
+  font-weight: 500;
+  color: #6c63ff;
+  margin-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.info-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #2a2a4a;
+}
+
+.info-item:last-child {
+  border-bottom: none;
+}
+
+.info-label {
+  font-size: 13px;
+  color: #888;
+}
+
+.info-value {
+  font-size: 13px;
+  color: #ddd;
+  font-weight: 500;
+  font-family: 'SF Mono', Monaco, Consolas, monospace;
+}
