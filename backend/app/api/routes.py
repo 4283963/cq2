@@ -12,7 +12,7 @@ from app.core.config import UPLOAD_DIR
 router = APIRouter()
 
 CHUNK_SIZE = 1024 * 1024
-
+  
 
 @router.post("/upload", response_model=UploadResponse)
 async def upload_audio(file: UploadFile = File(...)):
@@ -20,7 +20,7 @@ async def upload_audio(file: UploadFile = File(...)):
     try:
         audio_id = AudioService.generate_id()
         ext = os.path.splitext(file.filename or "audio.mp3")[1] or ".mp3"
-
+  
         fd, tmp_path = tempfile.mkstemp(suffix=ext, dir=str(UPLOAD_DIR))
         try:
             while True:
