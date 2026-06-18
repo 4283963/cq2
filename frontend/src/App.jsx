@@ -5,7 +5,7 @@ import Timeline from './components/Timeline';
 import TransportControls from './components/TransportControls';
 import AudioInfoPanel from './components/AudioInfoPanel';
 import { useAudioPlayer } from './hooks/useAudioPlayer';
-import { uploadAudio, getAudioFileUrl } from './api/audioApi';
+import { uploadAudio, getAudioFileUrl, denoiseAudio } from './api/audioApi';
 import './App.css';
 
 const TRACK_COLORS = [
@@ -51,6 +51,9 @@ function App() {
         solo: false,
         volume: 1,
         color: TRACK_COLORS[tracks.length % TRACK_COLORS.length],
+        denoiseStrength: 0,
+        isDenoising: false,
+        sourceAudioId: null,
       };
       
       setTracks(prev => [...prev, newTrack]);
@@ -83,6 +86,59 @@ function App() {
   const handleRemoveTrack = useCallback((trackId) => {
     setTracks(prev => prev.filter(track => track.id !== trackId));
   }, []);
+
+  const handleDenoiseChange = useCallback(async (trackId, strength) => {
+    setTracks(prev => prev.map(track =>
+      track.id === trackId ? { ...track, denoiseStrength: strength } : track
+    ));
+
+    if (strength <= 0) {
+      setTracks(prev => prev.map(track => {
+        if (track.id !== trackId) return track;
+        if (track.sourceAudioId) {
+          return {
+            ...track,
+            id: track.sourceAudioId,
+            audioUrl: getAudioFileUrl(track.sourceAudioId),
+            sourceAudioId: null,
+            isDenoising: false,
+          };
+        }
+        return { ...track, isDenoising: false };
+      }));
+      return;
+    }
+
+    setTracks(prev => prev.map(track =>
+      track.id === trackId ? { ...track, isDenoising: true } : track
+    ));
+
+    try {
+      const currentTrack = tracks.find(t => t.id === trackId);
+      const sourceId = currentTrack?.sourceAudioId || trackId;
+
+      const result = await denoiseAudio(sourceId, strength);
+
+      setTracks(prev => prev.map(track => {
+        if (track.id !== trackId) return track;
+        return {
+          ...track,
+          id: result.audio_id,
+          name: result.filename,
+          audioUrl: getAudioFileUrl(result.audio_id),
+          waveform: result.waveform,
+          duration: result.duration,
+          sourceAudioId: sourceId,
+          isDenoising: false,
+        };
+      }));
+    } catch (e) {
+      setError(e.message || '去噪处理失败');
+      setTracks(prev => prev.map(track =>
+        track.id === trackId ? { ...track, isDenoising: false } : track
+      ));
+    }
+  }, [tracks]);
 
   const firstTrackData = tracks[0];
 
@@ -140,11 +196,14 @@ function App() {
                     solo={track.solo}
                     volume={track.volume}
                     color={track.color}
+                    denoiseStrength={track.denoiseStrength}
+                    isDenoising={track.isDenoising}
                     onSeek={seek}
                     onMuteToggle={handleMuteToggle}
                     onSoloToggle={handleSoloToggle}
                     onVolumeChange={handleVolumeChange}
                     onRemove={handleRemoveTrack}
+                    onDenoiseChange={handleDenoiseChange}
                   />
                 ))}
               </div>
@@ -184,7 +243,8 @@ function App() {
               <li>支持多音轨同时播放</li>
               <li>M 按钮静音当前轨道</li>
               <li>S 按钮独奏当前轨道</li>
-              <li>拖动滑块调整音量</li>
+              <li>🔊 滑块调整音量</li>
+              <li>🔇 滑块调整去噪强度，拉到 0 恢复原始音频</li>
             </ul>
           </div>
         </div>

@@ -18,6 +18,14 @@ export function useAudioPlayer(tracks) {
 
   useEffect(() => {
     tracksRef.current = tracks;
+
+    const currentIds = new Set(tracks.map(t => t.id));
+    const cachedIds = Object.keys(audioBuffersRef.current);
+    for (const cachedId of cachedIds) {
+      if (!currentIds.has(cachedId)) {
+        delete audioBuffersRef.current[cachedId];
+      }
+    }
   }, [tracks]);
 
   useEffect(() => {

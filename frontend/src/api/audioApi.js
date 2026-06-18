@@ -48,3 +48,16 @@ export function getSliceUrl(audioId, sliceIndex) {
 export function getAudioFileUrl(audioId) {
   return `${API_BASE}/${audioId}/file`;
 }
+
+export async function denoiseAudio(audioId, strength) {
+  const response = await fetch(`${API_BASE}/${audioId}/denoise?strength=${strength}`, {
+    method: 'POST',
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || '去噪处理失败');
+  }
+
+  return response.json();
+}

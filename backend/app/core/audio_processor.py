@@ -108,3 +108,37 @@ def slice_audio_by_seconds(y: np.ndarray, sr: int, output_dir: str, audio_id: st
 def get_slice_filepath(audio_id: str, slice_index: int, slices_dir: str) -> str:
     slice_filename = f"slice_{slice_index:04d}.wav"
     return str(Path(slices_dir) / audio_id / slice_filename)
+
+
+def denoise_audio(
+    y: np.ndarray,
+    sr: int,
+    strength: float = 0.5,
+    n_fft: int = 2048,
+    hop_length: int = 512,
+) -> np.ndarray:
+    if strength <= 0.0:
+        return y
+    strength = min(strength, 1.0)
+
+    stft = librosa.stft(y, n_fft=n_fft, hop_length=hop_length)
+    magnitude = np.abs(stft)
+    phase = np.angle(stft)
+
+    frame_rms = np.sqrt(np.mean(magnitude ** 2, axis=0))
+    quietest_count = max(1, int(len(frame_rms) * 0.1))
+    quiet_indices = np.argsort(frame_rms)[:quietest_count]
+    noise_profile = np.mean(magnitude[:, quiet_indices], axis=1, keepdims=True)
+
+    threshold = noise_profile * (1.0 + strength * 2.0)
+    gain = np.ones_like(magnitude)
+    below = magnitude < threshold
+    floor = 1.0 - strength * 0.95
+    soft_ratio = (magnitude / threshold) * (1.0 - strength * 0.8)
+    gain = np.where(below, floor * soft_ratio, 1.0)
+
+    cleaned_magnitude = magnitude * gain
+    cleaned_stft = cleaned_magnitude * np.exp(1j * phase)
+    y_denoised = librosa.istft(cleaned_stft, hop_length=hop_length, length=len(y))
+
+    return y_denoised

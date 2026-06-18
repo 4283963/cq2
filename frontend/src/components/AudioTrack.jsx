@@ -13,11 +13,14 @@ function AudioTrack({
   solo,
   volume,
   color,
+  denoiseStrength,
+  isDenoising,
   onSeek,
   onMuteToggle,
   onSoloToggle,
   onVolumeChange,
   onRemove,
+  onDenoiseChange,
 }) {
   return (
     <div className={`audio-track ${muted ? 'muted' : ''}`}>
@@ -50,6 +53,7 @@ function AudioTrack({
           </button>
         </div>
         <div className="track-volume">
+          <span className="slider-label">🔊</span>
           <input
             type="range"
             min="0"
@@ -60,6 +64,25 @@ function AudioTrack({
             onClick={(e) => e.stopPropagation()}
           />
           <span className="volume-value">{Math.round(volume * 100)}%</span>
+        </div>
+        <div className="track-denoise">
+          <span className="slider-label">🔇</span>
+          <input
+            type="range"
+            min="0"
+            max="1"
+            step="0.05"
+            value={denoiseStrength || 0}
+            onChange={(e) => {
+              e.stopPropagation();
+              onDenoiseChange?.(id, parseFloat(e.target.value));
+            }}
+            onClick={(e) => e.stopPropagation()}
+            disabled={isDenoising}
+          />
+          <span className="volume-value">
+            {isDenoising ? '...' : `${Math.round((denoiseStrength || 0) * 100)}%`}
+          </span>
         </div>
       </div>
       <div className="track-waveform">

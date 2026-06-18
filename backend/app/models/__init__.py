@@ -43,3 +43,13 @@ class UploadResponse(BaseModel):
     sample_rate: int
     waveform: WaveformData
     features: AudioFeatures
+
+
+class DenoiseResponse(BaseModel):
+    audio_id: str
+    source_audio_id: str
+    filename: str
+    duration: float
+    sample_rate: int
+    denoise_strength: float
+    waveform: WaveformData

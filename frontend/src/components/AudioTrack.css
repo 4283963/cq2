@@ -22,7 +22,7 @@
   border-right: 1px solid #3a3a5a;
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px;
   flex-shrink: 0;
 }
 
@@ -124,4 +124,42 @@
   align-items: center;
   padding: 10px;
   min-width: 0;
+}
+
+.slider-label {
+  font-size: 12px;
+  flex-shrink: 0;
+}
+
+.track-denoise {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.track-denoise input[type="range"] {
+  flex: 1;
+  height: 4px;
+  -webkit-appearance: none;
+  background: #3a3a5a;
+  border-radius: 2px;
+  cursor: pointer;
+}
+
+.track-denoise input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: #4ecdc4;
+  cursor: pointer;
+}
+
+.track-denoise input[type="range"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.track-denoise input[type="range"]:disabled::-webkit-slider-thumb {
+  background: #666;
 }

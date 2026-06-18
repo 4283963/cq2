@@ -1,0 +1,1 @@
+{"id": "a5fd02c8-f743-4e85-9086-4135488ade3f", "filename": "denoised_test_audio.wav", "duration": 3.0, "sample_rate": 22050, "channels": 1, "format": "wav", "slices_count": 3, "source_audio_id": "0efcd515-7cb9-435a-95b1-ae37c3c2488c", "denoise_strength": 0.7}

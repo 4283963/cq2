@@ -8,9 +8,10 @@ from app.core.audio_processor import (
     extract_waveform,
     extract_features,
     slice_audio_by_seconds,
+    denoise_audio,
 )
 from app.services.storage_service import StorageService
-from app.models import WaveformData, AudioFeatures, AudioInfo, UploadResponse, SliceInfo
+from app.models import WaveformData, AudioFeatures, AudioInfo, UploadResponse, SliceInfo, DenoiseResponse
 
 
 class AudioService:
@@ -156,3 +157,63 @@ class AudioService:
         filename = metadata.get("filename", "audio.mp3")
         
         return file_path, filename
+
+    @staticmethod
+    def denoise(audio_id: str, strength: float) -> DenoiseResponse:
+        if not StorageService.audio_exists(audio_id):
+            raise ValueError(f"Audio not found: {audio_id}")
+
+        original_path = StorageService.get_audio_file_path(audio_id)
+        if not original_path:
+            raise ValueError(f"Audio file not found: {audio_id}")
+
+        y, sr = load_audio(original_path, sr=SAMPLE_RATE)
+
+        y_denoised = denoise_audio(y, sr, strength=strength)
+
+        new_id = StorageService.generate_id()
+        original_meta = StorageService.load_metadata(audio_id)
+        original_filename = original_meta.get("filename", "audio.wav") if original_meta else "audio.wav"
+        new_filename = f"denoised_{original_filename}"
+
+        import soundfile as sf
+        denoised_path = UPLOAD_DIR / f"{new_id}.wav"
+        sf.write(str(denoised_path), y_denoised, sr)
+
+        audio_info_data = get_audio_info(y_denoised, sr)
+        waveform_data = extract_waveform(y_denoised, sr, WAVEFORM_POINTS_PER_SECOND)
+
+        slice_audio_by_seconds(y_denoised, sr, str(SLICES_DIR), new_id)
+
+        metadata = {
+            "id": new_id,
+            "filename": new_filename,
+            "duration": audio_info_data["duration"],
+            "sample_rate": audio_info_data["sample_rate"],
+            "channels": audio_info_data["channels"],
+            "format": "wav",
+            "slices_count": int(audio_info_data["duration"]),
+            "source_audio_id": audio_id,
+            "denoise_strength": strength,
+        }
+        StorageService.save_metadata(new_id, metadata)
+        StorageService.save_waveform(new_id, waveform_data)
+
+        waveform = WaveformData(
+            audio_id=new_id,
+            duration=audio_info_data["duration"],
+            sample_rate=sr,
+            points_per_second=WAVEFORM_POINTS_PER_SECOND,
+            peaks=waveform_data["peaks"],
+            rms=waveform_data["rms"],
+        )
+
+        return DenoiseResponse(
+            audio_id=new_id,
+            source_audio_id=audio_id,
+            filename=new_filename,
+            duration=audio_info_data["duration"],
+            sample_rate=sr,
+            denoise_strength=strength,
+            waveform=waveform,
+        )

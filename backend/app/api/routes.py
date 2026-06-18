@@ -6,7 +6,7 @@ from fastapi.responses import FileResponse
 from typing import List
 
 from app.services.audio_service import AudioService
-from app.models import UploadResponse, WaveformData, AudioFeatures, AudioInfo, SliceInfo
+from app.models import UploadResponse, WaveformData, AudioFeatures, AudioInfo, SliceInfo, DenoiseResponse
 from app.core.config import UPLOAD_DIR
 
 router = APIRouter()
@@ -106,3 +106,14 @@ async def get_audio_file(audio_id: str):
         )
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
+
+
+@router.post("/{audio_id}/denoise", response_model=DenoiseResponse)
+async def denoise_audio(audio_id: str, strength: float = 0.5):
+    try:
+        strength = max(0.0, min(1.0, strength))
+        return AudioService.denoise(audio_id, strength)
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Internal server error: {str(e)}")
